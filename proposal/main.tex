@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage[nonatbib]{nips_2019}
+
+\usepackage[breaklinks=true,letterpaper=true,colorlinks,citecolor=black,bookmarks=false]{hyperref}
+
+\usepackage{amsthm}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[normalem]{ulem}
+
+\usepackage[backend=biber,maxbibnames=9,style=numeric,maxcitenames=2,backref=true,uniquelist=false,uniquename=false,sorting=none,defernumbers=true,noerroretextools, url=false,doi=false,isbn=false]{biblatex}
+\usepackage{csquotes}
+\renewbibmacro{in:}{%
+	\ifentrytype{article}{}{%
+		\printtext{\bibstring{in}\intitlepunct}}}
+\renewbibmacro*{volume+number+eid}{%
+	\printfield{volume}%
+	%  \setunit*{\adddot}% DELETED
+	\setunit*{\addnbspace}% NEW (optional); there's also \addnbthinspace
+	\printfield{number}%
+	\setunit{\addcomma\space}%
+	\printfield{eid}}
+%\DeclareFieldFormat[article]{number}{\mkbibparens{#1}} 
+\renewbibmacro*{volume+number+eid}{%
+	\setunit*{\addcomma\space}% NEW
+	\printfield{volume}%
+	%  \setunit*{\adddot}% DELETED
+	\setunit*{\addcomma\space}% NEW
+	\printfield{number}%
+	\setunit{\addcomma\space}%
+	\printfield{eid}
+}
+\DeclareFieldFormat[article]{volume}{\bibstring{volume}~#1}% volume of a journal
+\DeclareFieldFormat[article]{number}{\bibstring{number}~#1}% number of a journal
+\newbibmacro{string+doiurlisbn}[1]{%
+  \iffieldundef{doi}{%
+    \iffieldundef{url}{%
+      \iffieldundef{isbn}{%
+        \iffieldundef{issn}{%
+          #1%
+        }{%
+          \href{http://books.google.com/books?vid=ISSN\thefield{issn}}{#1}%
+        }%
+      }{%
+        \href{http://books.google.com/books?vid=ISBN\thefield{isbn}}{#1}%
+      }%
+    }{%
+      \href{\thefield{url}}{#1}%
+    }%
+  }{%
+    \href{http://dx.doi.org/\thefield{doi}}{#1}%
+  }%
+}
+\DeclareFieldFormat{title}{\usebibmacro{string+doiurlisbn}{\mkbibemph{#1}}}
+\DeclareFieldFormat[article,incollection,unpublished,inproceedings]{title}%
+{\usebibmacro{string+doiurlisbn}{\mkbibquote{#1}}}
+
+
+% change this to your bib file
+\addbibresource{project.bib}
+
+% use Times
+\usepackage{times}
+% For figures
+\usepackage{graphicx} % more modern
+%\usepackage{epsfig} % less modern
+%\usepackage{subfig} 
+
+\graphicspath{{../fig/}}
+
+\usepackage{tikz}
+\usepackage{tkz-tab}
+\usepackage{caption} 
+\usepackage{subcaption} 
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{arrow} = [very thick,->,>=stealth]
+
+\usepackage{cleveref}
+\usepackage{setspace}
+\usepackage{wrapfig}
+%\usepackage[ruled]{algorithm}
+\usepackage{algpseudocode}
+\usepackage[noend,linesnumbered]{algorithm2e}
+
+\usepackage[disable]{todonotes}
+
+
+\title{CS680 Project Proposal}
+
+\author{
+	Shengye Chen \\
+	School of Computer Science\\
+	University of Waterloo\\
+	\texttt{j57chen@uwaterloo.ca}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract} 
+This project will be an application of computer vision techniques to solve breast cancer detection problem using MRI images. I will study and analyze what has been done in the previous researches that were key to the success. Next, I will experiment with alternative approaches to optimize the solution and attempt to produce a result close to the best performance given the constraints such as data accessibility and computing resource.
+\end{abstract} 
+
+\section{Introduction}
+Breast cancer is the second most common cancer diagnosed in Canada, especially among women aged over 50.\cite{cmaj191292} 1 in 8 women will be diagnosed with breast cancer in their lifetime. When the breast tissue cells no longer behave normally, they may lead to breast tumours. Finding tiny tumours early can prevent the disease from getting worse and reduce death rates. Using computer vision techniques to screen potential breast cancer patients can significantly speed up diagnosis process. In this project proposal, I will cover some interesting papers related to this topic and the preliminary steps I will follow to complete this project.
+
+\section{Related Works}
+Many researches have been conducted to utilize computer vision to help doctors diagnosing breast cancers. Based on the CDC guideline\cite{cdcdiagnosis}, there are four ways to diagnose breast cancer --- breast ultrasound (sonograms), diagnostic mammogram (X-ray), and breast magnetic resonance imaging (MRI), and  histopathological images. In this section, I will mention one paper for each medical imaging type and explain why MRI is chosen for this project.
+
+Histopathological images were used in \cite{ALJUAID2022106951}. Images were labeled as benign and malignant lesions and each leision had four classes. Researchers performed data augmentation on the training dataset. Using ResNet, researchers achieved the best average accuracy for binary classification and multi-class classification with 99.7\% and 97.81\% respectively.
+
+In \cite{s22030807}, the researchers adopted the Breast Ultrasound Images (BUSI) dataset to train a DarkNet-53 model. Data augmentation was performed to increase the diversity of the original dataset. The features were extracted from the pooling layer and then the best features were selected using two different optimization algorithms --- the reformed binary grey wolf optimization (BGWO) and the reformed differential evolution (DE) algorithm. By using feature fusion and CSVM classifier, researchers achieved an accuracy of 99.1\%.
+
+Researchers in \cite{diagnostics12081812} used four mammography imaging datasets consisting of normal, benign, and malignant pictures. They used Inception V4, ResNet-164, VGG-11, and DenseNet121 models as base classifiers and ranked them with the Gompertz function. Then the decision scores of the base models were adaptively combined to construct final predictions. Their model achieved a 99.32\% accuracy rate.
+
+MRI images were used in \cite{Dewangan2022} where researchers proposed a Back Propagation Boosting Recurrent Widening Model (BPBRW) with a Hybrid Krill Herd African Buffalo Optimization (HKH-ABO) method to diagnose breast cancer at an earlier stage. Furthermore, Wienmed filter was established for pre-processing the MRI noisy image content. They demonstrated their model had a 99.6\% accuracy rate.
+
+Based on the related works above, I will choose MRI images to classify breast cancer for the following reasons: compared to mammography, MRI is not affected by dangerous radiation. Additionally, MRI has a higher sensitivity for detecting breast cancer than mammography and sonograms. Even though the project using histopathological images achieved the best performance, it requires taking tissue samples from patients, so biopsy is usually performed as the last step to affirm patients are positive for cancer. Therefore, MRI is the most suitable way to quickly screen breast cancer patients at an early stage.
+
+\section{Project Description}
+
+\subsection{Problem Definition}
+In this project, I will apply computer vision techniques to classify grey-scale breast MRI images as either positive or negative for cancer. Given the constraint of dataset availability and computing power, training and testing images will be reduced-size MRI images.
+
+\subsection{Project Plan}
+After studying what has been done in related works, the preliminary steps of my project include data collection, data augmentation, pre-processing, training classifiers with traditional pattern recognition methods, training classifiers with CNN methods, and test result evaluation.
+
+Data augmentation is a standard methodology to increase the dataset size in order to achieve a better performance with CNN. It also reduces redundancy and overfitting by arranging the dataset in a balanced manner. Random reflection, multiple rotations, and translations regarding horizontal or vertical aspects of the images are commonly used to augment the image data.
+
+Pre-processing step is commonly adopted to remove noise and enhance contrast. In order to enhance the qualities of breast cancer images, median filter and Gaussian filter are two options to remove noise. The main reason to use these filters are their abilities to maintain the original image features, like edges and corners. Images are often required to be resized into a uniform size in order to fit pre-trained deep neural networks.
+
+I plan to experiment with different methods to train classifiers, including but not limited to naïve Bayes and SVM for traditional approach (proved to be feasible in \cite{s22010203}), and ResNet for CNN approach (proved to be feasible in \cite{ALJUAID2022106951}\cite{diagnostics12081812}).
+
+\subsection{Expected Outcome}
+I will attempt to produce a result that is as close to the highest accuracy as possible. Due to my lack of medical expertise, I will not be able to explain why images are classified as positive or negative. This is the common drawback with neural networks regardless of their creator or application. My learnings from this project is the most important outcome.
+
+\section{Dataset}
+As I mentioned before, MRI images used in this project will be grey-scale and in reduced size. The dataset from Kaggle\cite{uzairkhan45} consists of well-labeled and balanced MRI images, with 740 healthy and 740 sick images. Each image has a dimension of $540\times 250$ pixels. This dataset does not have annotated cancer region and this could increase the difficulty for machine learning models to find which area is the most useful to detect breast cancer. High-resolution and annotated medical images are difficult to access and often require professional software to process. Moreover, it will cost large amount of resource to train models on high-quality images. Therefore, the Kaggle dataset should serve as a good starting point for this project.
+
+\newpage
+
+\printbibliography[title={References}]
+
+\end{document}
